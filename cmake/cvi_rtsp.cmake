@@ -42,7 +42,7 @@ if(NOT EXISTS "$ENV{TOP_DIR}/cvi_rtsp/src/libcvi_rtsp.so")
         endif()
         add_custom_command(
           OUTPUT ${SOURCE_DIR}/src/libcvi_rtsp.so
-          COMMAND CROSS_COMPILE=${TC_PATH}${CROSS_COMPILE} SDK_VER=${RTSP_SDK_VER} ./build.sh
+          COMMAND CROSS_COMPILE=${TC_PATH}${CROSS_COMPILE} LIVE555_DIR=${MLIR_SDK_ROOT} SDK_VER=${RTSP_SDK_VER} ./build.sh
           WORKING_DIRECTORY ${BUILD_DOWNLOAD_DIR}/cvi_rtsp
           VERBATIM
           COMMENT "Building libcvi_rtsp from copied files"
@@ -55,7 +55,7 @@ if(NOT EXISTS "$ENV{TOP_DIR}/cvi_rtsp/src/libcvi_rtsp.so")
       ExternalProject_Add(cvi_rtsp
         GIT_REPOSITORY ${PROJECT_URL}
         PREFIX ${BUILD_DOWNLOAD_DIR}/cvi_rtsp
-        BUILD_COMMAND CROSS_COMPILE=${TC_PATH}${CROSS_COMPILE} SDK_VER=${RTSP_SDK_VER} ./build.sh
+        BUILD_COMMAND CROSS_COMPILE=${TC_PATH}${CROSS_COMPILE} LIVE555_DIR=${MLIR_SDK_ROOT} SDK_VER=${RTSP_SDK_VER} ./build.sh
         CONFIGURE_COMMAND ""
         INSTALL_COMMAND ""
         BUILD_IN_SOURCE true
