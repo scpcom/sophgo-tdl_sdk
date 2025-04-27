@@ -85,6 +85,7 @@ elif [[ "$CHIP_ARCH" == "CV181X" ]] || [[ "$CHIP_ARCH" == "SG200X" ]]; then
     USE_TPU_IVE=OFF
 elif [[ "$CHIP_ARCH" == "CV180X" ]]; then
     USE_TPU_IVE=ON
+    NO_OPENCV=ON
 elif [[ "$CHIP_ARCH" == "SOPHON" ]]; then
     CHIP_ARCH=CV186X
     USE_TPU_IVE=OFF
@@ -122,6 +123,7 @@ pushd "${AI_SDK_INSTALL_PATH}/sample"
     MW_PATH=$MW_PATH\
     TPU_PATH=$TPU_SDK_INSTALL_PATH\
     IVE_PATH=$IVE_SDK_INSTALL_PATH\
+    NO_OPENCV=$NO_OPENCV\
     USE_TPU_IVE=$USE_TPU_IVE\
     CHIP=$CHIP_ARCH\
     SDK_VER=$SDK_VER\

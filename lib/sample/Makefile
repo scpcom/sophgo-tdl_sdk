@@ -163,7 +163,9 @@ SAMPLE_LIBS = -L$(MW_LIB_PATH) -L$(MW_3RD_LIB_PATH) $(MW_LIBS) \
 			  -L$(IVE_SDK_LIB_PATH) $(IVE_LIBS) \
 			  -L$(SDK_LIB_PATH) -L$(SDK_3RD_LIB_PATH) -lpthread -latomic
 
+ifeq ($(NO_OPENCV),)
 SAMPLE_LIBS_OPENCV += $(OPENCV_LIBS) -L$(OPENCV_LIB_PATH)
+endif
 
 CFLAGS += -I$(SDK_INC_PATH) \
           -I$(SDK_TDL_INC_PATH) \
