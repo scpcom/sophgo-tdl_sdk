@@ -170,7 +170,8 @@ void *run_venc(void *args) {
   pthread_exit(NULL);
 }
 
-void *run_tdl_thread(cvitdl_app_handle_t app_handle) {
+void *run_tdl_thread(void *_handle) {
+  cvitdl_app_handle_t app_handle = _handle;
   printf("Enter TDL thread\n");
 
   VIDEO_FRAME_INFO_S stFrame;
