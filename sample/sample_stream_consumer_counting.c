@@ -480,7 +480,7 @@ int main(int argc, char *argv[]) {
 CLEANUP_SYSTEM:
   CVI_TDL_Service_DestroyHandle(service_handle);
   CVI_TDL_DestroyHandle(tdl_handle);
-  DestroyVideoSystem(&stMWContext);
+  SAMPLE_TDL_Destroy_MW(&stMWContext);
   CVI_SYS_Exit();
   CVI_VB_Exit();
 }
