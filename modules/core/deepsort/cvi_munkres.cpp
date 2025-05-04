@@ -6,6 +6,7 @@
 #include "cvi_munkres.hpp"
 #include "cvi_tdl_log.hpp"
 
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>

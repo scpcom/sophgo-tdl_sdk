@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include "cvi_deepsort_types_internal.hpp"
 
 BBOX bbox_tlwh2tlbr(const BBOX &bbox_tlwh);
