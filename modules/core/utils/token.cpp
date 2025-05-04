@@ -1,8 +1,10 @@
 #include "token.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <regex>
 #include <set>
 #include <string>

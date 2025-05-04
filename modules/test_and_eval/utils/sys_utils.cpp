@@ -11,6 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <algorithm>
+#include <cstdint>
 #include <sstream>
 
 using namespace std;
