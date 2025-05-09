@@ -25,6 +25,7 @@ function(buildninstallcpp)
   include_directories(${PARSED_ARGS_INC})
   add_executable(${PROJECT_NAME} ${PROJECT_NAME}.cpp ${PARSED_ARGS_SRCS})
   target_link_libraries(${PROJECT_NAME} ${PARSED_ARGS_DEPS})
+  target_link_options(${PROJECT_NAME} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)
   install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 endfunction(buildninstallcpp)
 
