@@ -115,6 +115,7 @@ set(CORES_DEPS ${PERFETTO_LIBS} ${MLIR_LIBS} ${MIDDLEWARE_LIBS} ${IVE_LIBS})
 project(cvi_tdl)
 add_library(${PROJECT_NAME} SHARED ${CORES_SRCS})
 target_link_libraries(${PROJECT_NAME} ${CORES_DEPS} ${OPENCV_LIBS_IMCODEC})
+target_link_options(${PROJECT_NAME} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 project(cvi_tdl-static)
