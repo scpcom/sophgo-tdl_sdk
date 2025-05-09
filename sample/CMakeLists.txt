@@ -25,7 +25,7 @@ function(buildninstall)
   # endforeach(src)
   include_directories(${PARSED_ARGS_INC})
   add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c ${PARSED_ARGS_SRCS})
-  target_link_libraries(${PROJECT_NAME} ${PARSED_ARGS_DEPS} atomic)
+  target_link_libraries(${PROJECT_NAME} m ${PARSED_ARGS_DEPS} atomic)
   install(TARGETS ${PROJECT_NAME} DESTINATION bin)
   string(SUBSTRING "${PROJECT_NAME}" 0 10 substring1)
   if (substring1 STREQUAL "sample_app")
@@ -80,9 +80,9 @@ set(SAMPLE_INC ${SAMPLE_INC} ${MIDDLEWARE_SDK_ROOT}/component/panel/cv186x)
 endif()
 
 set(AUDIO_SAMPLE_LIBS
-    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_ssp.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_audio.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_vqe.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_ssp.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_dnvqe.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_ssp2.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libtinyalsa.so
@@ -97,29 +97,24 @@ endif()
 
 if(${CVI_PLATFORM} STREQUAL "CV186X")
 set(SAMPLE_LIBS
+    ${CVI_RTSP_LIBPATH}
     ${MIDDLEWARE_SDK_ROOT}/lib/libsys.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libvi.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libvpss.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libvenc.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvi.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libvo.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/librgn.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libgdc.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/librgn.so
     ${MIDDLEWARE_SDK_ROOT}/lib/3rd/libini.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libsns_full.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libisp.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvenc.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libawb.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libae.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libaf.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin_isp.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libisp_algo.so
-    ${CVI_RTSP_LIBPATH})
-# set(AUDIO_SAMPLE_LIBS
-#     ${AUDIO_SAMPLE_LIBS}
-#     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_dnvqe.so
-#     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_ssp2.so
-# )
+    ${MIDDLEWARE_SDK_ROOT}/lib/libisp_algo.so)
 set(SAMPLE_LIBS_FILE
     ${MIDDLEWARE_SDK_ROOT}/sample/common/sample_common_platform.c
     ${MIDDLEWARE_SDK_ROOT}/sample/common/sample_common_sys.c
@@ -132,48 +127,47 @@ set(SAMPLE_LIBS_FILE
     ${MIDDLEWARE_SDK_ROOT}/sample/common/sample_common_peripheral.c
 )
 add_definitions(-DSENSOR_GCORE_GC4653)
-else()
+elseif(${CONFIG_DUAL_OS} STREQUAL "ON")
 set(SAMPLE_LIBS
     ${MIDDLEWARE_SDK_ROOT}/lib/libsys.so
-	  ${MIDDLEWARE_SDK_ROOT}/lib/libvpu.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvpu.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
     ${MIDDLEWARE_SDK_ROOT}/lib/3rd/libini.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libsns_full.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libsample.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libmsg.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvilink.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libsys.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libisp.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libvenc.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libawb.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libae.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libaf.so
     ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin_isp.so
-    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
     ${MLIR_SDK_ROOT}/lib/libz.so
+)
+else()
+set(SAMPLE_LIBS
     ${CVI_RTSP_LIBPATH}
+    ${MIDDLEWARE_SDK_ROOT}/lib/libsample.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libsys.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvpss.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvi.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvo.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libgdc.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/librgn.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/3rd/libini.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libsns_full.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libisp.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvenc.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libawb.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libae.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libaf.so
+    ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin_isp.so
+    ${MLIR_SDK_ROOT}/lib/libz.so
 )
 
-if(${CVI_PLATFORM} STRLESS "CV186X")
-    set(SAMPLE_LIBS
-        ${MIDDLEWARE_SDK_ROOT}/lib/libsys.so
-    	  ${MIDDLEWARE_SDK_ROOT}/lib/libvi.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libvo.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libvpss.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libgdc.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/librgn.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/3rd/libini.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libsns_full.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libsample.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libisp.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libvdec.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libvenc.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libawb.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libae.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libaf.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin_isp.so
-        ${MIDDLEWARE_SDK_ROOT}/lib/libcvi_bin.so
-        ${MLIR_SDK_ROOT}/lib/libz.so
-        ${CVI_RTSP_LIBPATH}
-    )
-endif()
 set(SAMPLE_LIBS ${SAMPLE_LIBS}
     ${MIDDLEWARE_SDK_ROOT}/lib/libmisc.so
 )

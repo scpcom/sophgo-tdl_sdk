@@ -46,12 +46,12 @@ else ifeq ($(SDK_VER), glibc_riscv64)
 ARCH=riscv64
 CROSS_COMPILE = $(CROSS_COMPILE_RISCV64_GLIBC)
 CFLAGS += -march=rv64imafdcv0p7xthead -mabi=lp64d
-LDFLAGS = -mcpu=c906fdv
+CFLAGS += -mcpu=c906fdv
 else ifeq ($(SDK_VER), musl_riscv64)
 ARCH=riscv64
 CROSS_COMPILE = $(CROSS_COMPILE_RISCV64_MUSL)
 CFLAGS += -march=rv64imafdcv0p7xthead
-LDFLAGS = -mcpu=c906fdv
+CFLAGS += -mcpu=c906fdv
 else
 $(error "Unknown SDK_VER: $(SDK_VER")")
 endif
@@ -95,7 +95,7 @@ ifeq ($(CHIP), CV186X)
 		 ${MW_SAMPLE_PATH}/sample_common_venc.c \
 		 ${MW_SAMPLE_PATH}/sample_common_peripheral.c
 else ifeq ($(CHIP), CV181X)
-	MW_LIBS = -lini -lsns_full -lsample -lisp -lvdec -lvenc -lawb -lae -laf -lcvi_bin -lcvi_bin_isp -lmisc -lisp_algo -lsys  -lvi -lvo -lvpss -lrgn -lgdc
+	MW_LIBS = -lsample -lsys -lvpss -lcvi_bin -lvi -lvo -lgdc -lrgn -lsns_full -lisp -lvenc -lvdec -lawb -lae -laf -lcvi_bin_isp -lini -lmisc -lisp_algo
 	MW_ISP_INC_PATH = $(MW_INC_PATH)/isp/cv181x/
 	CFLAGS += -DCV181X -D__CV181X__
 else ifeq ($(CHIP), CV180X)
@@ -157,11 +157,12 @@ DRAW_RECT_INC_PATH = $(SDK_ROOT_PATH)/include/cvi_draw_rect
 PREPROCESS_INC_PATH = $(SDK_ROOT_PATH)/include/cvi_preprocess
 
 CFLAGS += -fsigned-char -Werror=all -Wno-format-truncation -fdiagnostics-color=always -s
+CFLAGS += -Wl,-gc-sections -lpthread -latomic
 
-SAMPLE_LIBS = -L$(MW_LIB_PATH) -L$(MW_3RD_LIB_PATH) $(MW_LIBS) \
- 			  -L$(TPU_LIB_PATH) $(TPU_LIBS) \
-			  -L$(IVE_SDK_LIB_PATH) $(IVE_LIBS) \
-			  -L$(SDK_LIB_PATH) -L$(SDK_3RD_LIB_PATH) -lpthread -latomic
+SAMPLE_BASE_LIBS = -L$(TPU_LIB_PATH) $(TPU_LIBS) -L$(IVE_SDK_LIB_PATH) $(IVE_LIBS) -L$(SDK_LIB_PATH) $(SDK_TDL_LIBS)
+SAMPLW_MW_LIB = -L$(MW_LIB_PATH) -L$(MW_3RD_LIB_PATH) $(MW_LIBS) -L$(SDK_3RD_LIB_PATH)
+
+SAMPLE_LIBS = $(SAMPLE_BASE_LIBS) $(SAMPLW_MW_LIB)
 
 ifeq ($(NO_OPENCV),)
 SAMPLE_LIBS_OPENCV += $(OPENCV_LIBS) -L$(OPENCV_LIB_PATH)
@@ -180,6 +181,8 @@ CFLAGS += -I$(SDK_INC_PATH) \
 		  -I$(MW_ISP_INC_PATH) \
 		  -I$(MW_INC_PATH)/linux \
 		  -I$(KERNEL_ROOT)/include
+
+CXXFLAGS = $(subst -std=gnu11,-std=gnu++14, $(CFLAGS))
 
 ifeq ($(CONFIRM_ENV_VAR), 1)
 $(info ---------------------------------------)
@@ -209,14 +212,14 @@ clean:
 	rm -f $(TARGETS) *.o
 
 $(PWD)/%.o: $(PWD)/%.cpp
-	$(CXX) $(DEPFLAGS) $(CFLAGS) -o $@ -c $<
+	$(CXX) $(DEPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
 sample_lib_cvimd: $(PWD)/sample_lib_cvimd.o
-	$(CXX) $(DEPFLAGS) $(LDFLAGS) $(SAMPLE_LIBS) -lcvi_md -o $@ $^
+	$(CXX) $(DEPFLAGS) $(CXXFLAGS) -o $@ $^ -lcvi_md $(SAMPLE_LIBS_OPENCV) $(SAMPLE_LIBS)
 
 sample_lib_draw_rect: $(PWD)/sample_lib_draw_rect.o
-	$(CXX) $(DEPFLAGS) $(LDFLAGS) $(SAMPLE_LIBS_OPENCV) $(SAMPLE_LIBS) -lcvi_draw_rect -o $@ $^
+	$(CXX) $(DEPFLAGS) $(CXXFLAGS) -o $@ $^ -lcvi_draw_rect $(SAMPLE_LIBS_OPENCV) $(SAMPLE_LIBS)
 
 sample_lib_preprocess: $(PWD)/sample_lib_preprocess.o
-	$(CXX) $(DEPFLAGS) $(LDFLAGS) $(SAMPLE_LIBS) -lcvi_preprocess -o $@ $^
+	$(CXX) $(DEPFLAGS) $(CXXFLAGS) -o $@ $^ -lcvi_preprocess $(SAMPLE_LIBS_OPENCV) $(SAMPLE_LIBS)
 

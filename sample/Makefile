@@ -99,7 +99,7 @@ ifeq ($(CHIP), CV186X)
 		 ${MW_SAMPLE_PATH}/sample_common_venc.c \
 		 ${MW_SAMPLE_PATH}/sample_common_peripheral.c
 else ifeq ($(CHIP), CV181X)
-	MW_LIBS = -lini -lsns_full -lsample -lisp -lvdec -lvenc -lawb -lae -laf -lcvi_bin -lcvi_bin_isp -lmisc -lisp_algo -lsys  -lvi -lvo -lvpss -lrgn -lgdc
+	MW_LIBS = -lsample -lsys -lvpss -lcvi_bin -lvi -lvo -lgdc -lrgn -lsns_full -lisp -lvenc -lvdec -lawb -lae -laf -lcvi_bin_isp -lini -lmisc -lisp_algo
 	MW_ISP_INC_PATH = $(MW_INC_PATH)/isp/cv181x/
 	MW_LINUX_INC_PATH = $(KERNEL_ROOT)/include/
 	CFLAGS += -DCV181X -D__CV181X__
@@ -176,6 +176,7 @@ DRAW_RECT_INC_PATH = $(SDK_ROOT_PATH)/include/cvi_draw_rect
 PREPROCESS_INC_PATH = $(SDK_ROOT_PATH)/include/cvi_preprocess
 
 CFLAGS += -std=gnu11 -Wno-pointer-to-int-cast -fsigned-char -Wno-format-truncation -fdiagnostics-color=always -s -lpthread -latomic
+CFLAGS += -Wl,-gc-sections
 
 SRCS := $(wildcard $(PWD)/*.c)
 CPPS := $(wildcard $(PWD)/*.cpp)
@@ -188,10 +189,10 @@ SAMPLE_OPENCV_LIB = -L$(OPENCV_LIB_PATH) $(OPENCV_LIBS)
 endif
 
 SAMPLE_INIT_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_BASE_LIBS)
-SAMPLE_AUD_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_BASE_LIBS)  $(MW_AUDIO_LIBS)  $(SAMPLE_OPENCV_LIB)
-SAMPLE_YOLO_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_BASE_LIBS)  $(SAMPLE_OPENCV_LIB)
+SAMPLE_AUD_LIBS = $(SAMPLE_BASE_LIBS) $(SAMPLW_MW_LIB)  $(MW_AUDIO_LIBS)  $(SAMPLE_OPENCV_LIB)
+SAMPLE_YOLO_LIBS = $(SAMPLE_BASE_LIBS) $(SAMPLW_MW_LIB)  $(SAMPLE_OPENCV_LIB)
 SAMPLE_VI_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_OPENCV_LIB) $(SAMPLE_BASE_LIBS) -L$(RTSP_LIB_PATH) $(RTSP_LIBS)
-SAMPLE_APP_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_OPENCV_LIB) $(SAMPLE_BASE_LIBS) -L$(RTSP_LIB_PATH) $(RTSP_LIBS) $(SDK_APP_LIBS)
+SAMPLE_APP_LIBS = $(SAMPLW_MW_LIB) $(SAMPLE_OPENCV_LIB) $(SAMPLE_BASE_LIBS) $(SDK_APP_LIBS) -L$(RTSP_LIB_PATH) $(RTSP_LIBS)
 
 CFLAGS += -I$(SDK_INC_PATH) \
           -I$(SDK_TDL_INC_PATH) \
@@ -211,6 +212,8 @@ CFLAGS += -I$(SDK_INC_PATH) \
 		  -I$(MW_INC_PATH) \
 		  -I$(MW_INC_PATH)/linux \
           -I$(AISDK_ROOT_PATH)/include/stb
+
+CXXFLAGS = $(subst -std=gnu11,-std=gnu++14, $(CFLAGS))
 
 ifeq ($(CONFIRM_ENV_VAR), 1)
 $(info ---------------------------------------)
@@ -263,28 +266,28 @@ $(PWD)/%.o: $(PWD)/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(PWD)/%.o: $(PWD)/%.cpp
-	$(CXX) $(CFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(SDK_ROOT_PATH)/sample/utils/%.o: $(SDK_ROOT_PATH)/sample/utils/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 sample_init: $(PWD)/sample_init.o
-	$(CC) $(CFLAGS) $(SAMPLE_INIT_LIBS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(SAMPLE_INIT_LIBS)
 
 sample_aud_%: $(PWD)/sample_aud_%.o $(SDK_ROOT_PATH)/sample/utils/sample_utils.o
-	$(CXX) $(CFLAGS) $(SAMPLE_AUD_LIBS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(SAMPLE_AUD_LIBS)
 
 sample_yol%: $(PWD)/sample_yol%.o
-	$(CXX) $(CFLAGS) $(SAMPLE_YOLO_LIBS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(SAMPLE_YOLO_LIBS)
 
 sample_vi_%: $(PWD)/sample_vi_%.o \
 			 $(SDK_ROOT_PATH)/sample/utils/sample_utils.o \
 			 $(SDK_ROOT_PATH)/sample/utils/middleware_utils.o \
 			 $(SAMPLE_COMMON_FILE)
-	$(CC) $(CFLAGS) $(SAMPLE_VI_LIBS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(SAMPLE_VI_LIBS)
 
 sample_app_%: $(PWD)/sample_app_%.o \
 			  $(SDK_ROOT_PATH)/sample/utils/vi_vo_utils.o \
 			  $(SAMPLE_COMMON_FILE)
-	$(CC) $(CFLAGS) $(SAMPLE_APP_LIBS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(SAMPLE_APP_LIBS)
 
