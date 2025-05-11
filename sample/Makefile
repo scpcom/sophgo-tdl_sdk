@@ -32,6 +32,7 @@ ifeq ($(SDK_VER), 32bit)
 ARCH=arm
 CROSS_COMPILE = $(CROSS_COMPILE_32)
 CFLAGS += -mfloat-abi=hard -mfpu=neon-vfpv4 -march=armv7-a
+CFLAGS += -D__uint128_t='void*'
 else ifeq ($(SDK_VER), 64bit)
 ARCH=arm64
 CROSS_COMPILE = $(CROSS_COMPILE_64)
