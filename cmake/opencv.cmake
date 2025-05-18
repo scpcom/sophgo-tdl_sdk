@@ -14,19 +14,40 @@ else()
   message(FATAL_ERROR "No shrinked opencv library for ${CMAKE_TOOLCHAIN_FILE}")
 endif()
 
+set(OPENCV_VERSION_MAJOR "3")
+set(OPENCV_VERSION_MINOR "2")
+set(OPENCV_VERSION_PATCH "0")
+
+set(OPENCV_VERSION_MM "${OPENCV_VERSION_MAJOR}.${OPENCV_VERSION_MINOR}")
+set(OPENCV_VERSION_STR "${OPENCV_VERSION_MAJOR}.${OPENCV_VERSION_MINOR}.${OPENCV_VERSION_PATCH}")
+
+set(THIRD_PARTY_PATH ${MLIR_SDK_ROOT}/../third_party/opencv_aisdk.tar.gz)
 set(DOWNLOAD_PATH "${BUILD_DOWNLOAD_DIR}/opencv-src/${ARCHITECTURE}/opencv_aisdk.tar.gz")
 
 if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src")
   # Create the opencv-src directory if it doesn't exist
   file(MAKE_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src")
 
-  FetchContent_Declare(
-    opencv
-    GIT_REPOSITORY https://github.com/sophgo/cvi_opencv.git
-    GIT_TAG origin/${ARCHITECTURE}
-  )
-  FetchContent_MakeAvailable(opencv)
-  message("Content downloaded to ${opencv_SOURCE_DIR}")
+  if(EXISTS "${THIRD_PARTY_PATH}")
+    message(STATUS "Copying opencv from ${THIRD_PARTY_PATH} to ${DOWNLOAD_PATH}")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E copy ${THIRD_PARTY_PATH} ${DOWNLOAD_PATH}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      RESULT_VARIABLE result
+    )
+
+    if(result EQUAL 0)
+      message(STATUS "opencv copied to ${DOWNLOAD_PATH}")
+    endif()
+  else()
+    FetchContent_Declare(
+      opencv
+      GIT_REPOSITORY https://github.com/sophgo/cvi_opencv.git
+      GIT_TAG origin/${ARCHITECTURE}
+    )
+    FetchContent_MakeAvailable(opencv)
+    message("Content downloaded to ${opencv_SOURCE_DIR}")
+  endif()
 
   # Extract the tar.gz file
   execute_process(
@@ -58,12 +79,12 @@ endif()
 set(OPENCV_PATH ${CMAKE_INSTALL_PREFIX}/sample/3rd/opencv)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_core.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_core.so)
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgproc.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgproc.so)
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgcodecs.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgcodecs.so)
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_core.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_core.so.3.2)
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgproc.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgproc.so.3.2)
-install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgcodecs.so.3.2.0 DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgcodecs.so.3.2)
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_core.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_core.so)
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgproc.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgproc.so)
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgcodecs.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgcodecs.so)
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_core.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_core.so.${OPENCV_VERSION_MM})
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgproc.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgproc.so.${OPENCV_VERSION_MM})
+install(PROGRAMS ${OPENCV_ROOT}/lib/libopencv_imgcodecs.so.${OPENCV_VERSION_STR} DESTINATION ${OPENCV_PATH}/lib RENAME libopencv_imgcodecs.so.${OPENCV_VERSION_MM})
 else()
 file(GLOB OPENCV_LIBS "${OPENCV_ROOT}/lib/*so*")
 install(FILES ${OPENCV_LIBS} DESTINATION ${OPENCV_PATH}/lib)
