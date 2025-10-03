@@ -4,7 +4,7 @@ if (NOT IS_DIRECTORY  "${BUILD_DOWNLOAD_DIR}/libeigen-src")
 FetchContent_Declare(
   libeigen
   GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG origin/master
+  GIT_TAG bea7f7c582ab3c11a1e2773d6636aa87390a67a7 # nightly-20250926
 )
 FetchContent_MakeAvailable(libeigen)
 message("Content downloaded to ${libeigen_SOURCE_DIR}")
