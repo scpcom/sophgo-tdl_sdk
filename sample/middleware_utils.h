@@ -5,6 +5,10 @@
 #include <rtsp.h>
 #include <sample_comm.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief configuration for a VBPool
  * @var u32Width
@@ -240,4 +244,9 @@ void SAMPLE_TDL_Destroy_MW(SAMPLE_TDL_MW_CONTEXT *pstMWContext);
  * @param pstMWContext middleware context
  */
 void SAMPLE_TDL_Destroy_MW_NO_RTSP(SAMPLE_TDL_MW_CONTEXT *pstMWContext);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
