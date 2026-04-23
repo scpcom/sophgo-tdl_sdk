@@ -1,7 +1,7 @@
 #ifndef VPSS_PREPROCESSOR_H
 #define VPSS_PREPROCESSOR_H
 
-#include <cvi_comm_vpss.h>
+#include <linux/cvi_comm_vpss.h>
 
 #include "preprocess/base_preprocessor.hpp"
 

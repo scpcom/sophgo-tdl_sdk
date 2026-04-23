@@ -1,11 +1,11 @@
 #ifndef VPSS_IMAGE_H
 #define VPSS_IMAGE_H
 
-#include <cvi_comm_vpss.h>
-#include <cvi_errno.h>
-#include <cvi_math.h>
+#include <linux/cvi_comm_vpss.h>
+#include <linux/cvi_errno.h>
+#include <linux/cvi_math.h>
 #include <cvi_sys.h>
-#include <cvi_type.h>
+#include <linux/cvi_type.h>
 #include "image/base_image.hpp"
 
 class VPSSImage : public BaseImage {

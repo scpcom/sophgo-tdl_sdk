@@ -2,8 +2,8 @@
 #define FRAME_DUMP_H
 
 #include "common/common_types.hpp"
-#include "cvi_comm_sys.h"
-#include "cvi_comm_vpss.h"
+#include "linux/cvi_comm_sys.h"
+#include "linux/cvi_comm_vpss.h"
 #include "cvi_sys.h"
 #include "cvi_vpss.h"
 
