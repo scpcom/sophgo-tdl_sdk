@@ -192,6 +192,8 @@ if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/nlohmannjson-src")
   FetchContent_Declare(
     nlohmannjson
     URL ${NLOHMANNJSON_URL}
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
   )
   FetchContent_MakeAvailable(nlohmannjson)
   message("Content downloaded to ${nlohmannjson_SOURCE_DIR}")
@@ -331,7 +333,8 @@ endif()
 if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/stb-src")
   FetchContent_Declare(
     stb
-    URL ${STB_URL}
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG origin/master
   )
   FetchContent_MakeAvailable(stb)
   message("Content downloaded to ${stb_SOURCE_DIR}")
