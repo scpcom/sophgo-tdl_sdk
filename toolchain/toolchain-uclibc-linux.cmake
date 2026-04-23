@@ -1,0 +1,1 @@
+arm-cvitek-linux-uclibcgnueabihf.cmake
