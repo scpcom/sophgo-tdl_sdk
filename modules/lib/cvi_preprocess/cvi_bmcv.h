@@ -2,8 +2,8 @@
 #ifndef CVI_BMCV_FILE_H
 #define CVI_BMCV_FILE_H
 
-#include <cvi_comm_vpss.h>
-#include <cvi_type.h>
+#include <linux/cvi_comm_vpss.h>
+#include <linux/cvi_type.h>
 
 #define DLL_EXPORT __attribute__((visibility("default")))
 

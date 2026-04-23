@@ -1,8 +1,8 @@
 #ifndef _CVI_MD_HEAD_
 #define _CVI_MD_HEAD_
 
-#include <cvi_comm_vpss.h>
-#include <cvi_type.h>
+#include <linux/cvi_comm_vpss.h>
+#include <linux/cvi_type.h>
 
 #define DLL_EXPORT __attribute__((visibility("default")))
 typedef void *cvi_md_handle_t;

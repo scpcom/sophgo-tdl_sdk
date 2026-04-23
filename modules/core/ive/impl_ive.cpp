@@ -2,7 +2,7 @@
 #include <cvi_ive.h>
 #include <string.h>
 #include <string>
-#include "cvi_comm_ive.h"
+#include "linux/cvi_comm_ive.h"
 #include "cvi_tdl_log.hpp"
 
 namespace ive {

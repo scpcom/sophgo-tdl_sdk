@@ -1,7 +1,7 @@
 #ifndef _CVI_DARW_RECT_HEAD_
 #define _CVI_DARW_RECT_HEAD_
 
-#include <cvi_type.h>
+#include <linux/cvi_type.h>
 #define DLL_EXPORT __attribute__((visibility("default")))
 #include "cvi_tdl.h"
 #include "cvi_tdl_app.h"
