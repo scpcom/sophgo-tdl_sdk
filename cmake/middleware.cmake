@@ -106,6 +106,7 @@ set(MIDDLEWARE_INCLUDES ${ISP_HEADER_PATH}
                         ${MIDDLEWARE_SDK_ROOT}/include/
                         ${MIDDLEWARE_SDK_ROOT}/include/isp/
                         ${MIDDLEWARE_SDK_ROOT}/include/linux/
+                        ${KERNEL_ROOT}/include/
                         ${MIDDLEWARE_SDK_ROOT}/3rdparty/inih/
                         ${MIDDLEWARE_SDK_ROOT}/sample/common/
                         ${MIDDLEWARE_SDK_ROOT}/sample_app/common/
