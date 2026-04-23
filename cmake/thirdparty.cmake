@@ -38,26 +38,24 @@ else()
 endif()
 
 # ===============Eigen===============
-if(EXISTS "${OSS_TARBALL_PATH}/eigen.tar.gz")
-  set(EIGEN_URL ${OSS_TARBALL_PATH}/eigen.tar.gz)
-elseif(EXISTS "${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/eigen.tar.gz")
-  set(EIGEN_URL ${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/eigen.tar.gz)
-elseif(IS_LOCAL)
-  set(EIGEN_URL ${3RD_PARTY_URL_PREFIX}/${ARCHITECTURE}/eigen.tar.gz)
-else()
-  set(EIGEN_URL ${TOP_DIR}/tdl_sdk/dependency/thirdparty/eigen.tar.gz)
-endif()
-message("EIGEN_URL:${EIGEN_URL},is_local:${IS_LOCAL}")
+#if (IS_LOCAL)
+#  set(EIGEN_URL ${3RD_PARTY_URL_PREFIX}${ARCHITECTURE}/eigen.tar.gz)
+#else()
+#  set(EIGEN_URL ${TOP_DIR}/tdl_sdk/dependency/thirdparty/eigen.tar.gz)
+#endif()
+#message("EIGEN_URL:${EIGEN_URL},is_local:${IS_LOCAL}")
 
 if (NOT IS_DIRECTORY  "${BUILD_DOWNLOAD_DIR}/libeigen-src")
   FetchContent_Declare(
     libeigen
-    URL ${EIGEN_URL}
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG bea7f7c582ab3c11a1e2773d6636aa87390a67a7 # nightly-20250926
   )
   FetchContent_MakeAvailable(libeigen)
   message("Content downloaded to ${libeigen_SOURCE_DIR}")
 endif()
-include_directories(${BUILD_DOWNLOAD_DIR}/libeigen-src/include/eigen3)
+#include_directories(${BUILD_DOWNLOAD_DIR}/libeigen-src/include/eigen3)
+include_directories(${BUILD_DOWNLOAD_DIR}/libeigen-src)
 # ===============Eigen===============
 
 # ===============kissfft===============
@@ -164,7 +162,8 @@ set(INSTALL_GTEST OFF CACHE BOOL "Install GMOCK")
 if (NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/googletest-src")
   FetchContent_Declare(
     googletest
-    URL ${GOOGLETEST_URL}
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG  e2239ee6043f73722e7aa812a459f54a28552929 # release-1.11.0
   )
   FetchContent_MakeAvailable(googletest)
   message("Content downloaded to ${googletest_SOURCE_DIR}")
