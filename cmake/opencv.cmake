@@ -92,6 +92,7 @@ else()
   set(OPENCV_VERSION_STR "${OPENCV_VERSION_MAJOR}.${OPENCV_VERSION_MINOR}.${OPENCV_VERSION_PATCH}")
 
   set(THIRD_PARTY_PATH ${MLIR_SDK_ROOT}/../third_party/opencv_aisdk.tar.gz)
+  set(DOWNLOAD_PATH "${BUILD_DOWNLOAD_DIR}/opencv-src/${ARCHITECTURE}/opencv_aisdk.tar.gz")
   if(EXISTS "${OSS_TARBALL_PATH}/opencv_aisdk.tar.gz")
     set(OPENCV_URL ${OSS_TARBALL_PATH}opencv_aisdk.tar.gz)
   elseif(EXISTS "${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/opencv_aisdk.tar.gz")
@@ -104,6 +105,9 @@ else()
 endif()
 
 if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src/lib")
+  # Create the opencv-src directory if it doesn't exist
+  file(MAKE_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src")
+
   if(EXISTS "${THIRD_PARTY_PATH}")
     message(STATUS "Copying opencv from ${THIRD_PARTY_PATH} to ${DOWNLOAD_PATH}")
     execute_process(
@@ -124,6 +128,13 @@ if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src/lib")
     FetchContent_MakeAvailable(opencv)
     message("Content downloaded to ${opencv_SOURCE_DIR}")
   endif()
+
+  # Extract the tar.gz file
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${DOWNLOAD_PATH}
+    WORKING_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src"
+  )
+  message("Content extracted to ${BUILD_DOWNLOAD_DIR}/opencv-src")
 endif()
 set(OPENCV_ROOT ${BUILD_DOWNLOAD_DIR}/opencv-src)
 
