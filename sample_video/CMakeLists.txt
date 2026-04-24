@@ -110,7 +110,6 @@ if(${CVI_PLATFORM} STREQUAL "SOPHON")
 else()
   set(AUDIO_SAMPLE_LIBS
     ${AUDIO_SAMPLE_LIBS}
-    ${MIDDLEWARE_SDK_ROOT}/lib/3rd/libsbc.so
   )
 endif()
 
