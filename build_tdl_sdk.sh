@@ -80,8 +80,24 @@ TOOLCHAIN_FILE="${CVI_TDL_ROOT}"/toolchain/"${TARGET_MACHINE}".cmake
 # set dependency
 MW_VER=v2
 MPI_PATH="${TOP_DIR}"/cvi_mpi
+[[ -e "${MPI_PATH}" ]] || MPI_PATH="${TOP_DIR}"/middleware
 TPU_SDK_INSTALL_PATH="${OUTPUT_DIR}"/tpu_"${SDK_VER}"/cvitek_tpu_sdk
 IVE_SDK_INSTALL_PATH="${OUTPUT_DIR}"/tpu_"${SDK_VER}"/cvitek_ive_sdk
+
+if [[ "$SDK_VER" == "uclibc" ]]; then
+    KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/arm/usr
+elif [[ "$SDK_VER" == "32bit" ]]; then
+    KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/arm/usr
+elif [[ "$SDK_VER" == "64bit" ]]; then
+    KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/arm64/usr
+elif [[ "$SDK_VER" == "glibc_riscv64" ]]; then
+    KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/riscv/usr/
+elif [[ "$SDK_VER" == "musl_riscv64" ]]; then
+    KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/riscv/usr/
+else
+    echo "Wrong SDK_VER=$SDK_VER"
+    exit 1
+fi
 
 # init build working dir
 if [ -d "${BUILD_WORKING_DIR}" ]; then
@@ -124,6 +140,7 @@ $CMAKE_BIN -G Ninja ${CVI_TDL_ROOT} -DCVI_PLATFORM=${CHIP_ARCH} \
                                     -DCMAKE_INSTALL_PREFIX=${TDL_SDK_INSTALL_PATH} \
                                     -DTOOLCHAIN_ROOT_DIR=${HOST_TOOL_PATH} \
                                     -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE} \
+                                    -DKERNEL_ROOT=$KERNEL_ROOT \
                                     -DUSE_TPU_IVE=${USE_TPU_IVE} \
                                     -DBUILD_DOWNLOAD_DIR=${BUILD_DOWNLOAD_DIR} \
                                     -DCONFIG_DUAL_OS=${CONFIG_DUAL_OS} \
