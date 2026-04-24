@@ -17,10 +17,8 @@ add_subdirectory(core)
 add_subdirectory(service)
 add_subdirectory(lib)
 
-if(IS_LOCAL)
-  add_subdirectory(eval)
-  add_subdirectory(test)
-endif()
+add_subdirectory(eval)
+add_subdirectory(test)
 
 set(CORES_SRCS $<TARGET_OBJECTS:cvi_tdl_core>
                $<TARGET_OBJECTS:cvi_tdl_service>
