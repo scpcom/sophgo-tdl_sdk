@@ -1376,9 +1376,10 @@ CVI_S32 CVI_TDL_WordPieceInit(const cvitdl_handle_t handle, const char *vocabFil
   if (ctx->word_piece_tokenizer == nullptr) {
     LOGD("Init word_piece_tokenizer.\n");
     ctx->word_piece_tokenizer = new WordPieceTokenizer(std::string(vocabFile));
-
-    return CVI_TDL_SUCCESS;
   }
+  return CVI_TDL_SUCCESS;
+#else
+  return CVI_TDL_FAILURE;
 #endif
 }
 
