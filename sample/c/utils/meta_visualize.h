@@ -6,7 +6,7 @@
 
 #if defined(__CV181X__) || defined(__CV180X__) || defined(__CV182X__) || \
     defined(__CV183X__) || defined(__CV184X__) || defined(__CV186X__)
-#include "cvi_comm_vpss.h"
+#include "linux/cvi_comm_vpss.h"
 #include "cvi_sys.h"
 #endif
 

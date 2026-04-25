@@ -4,9 +4,9 @@
 #include <sys/prctl.h>
 #include <atomic>
 #include <thread>
-#include "cvi_comm_vi.h"
-#include "cvi_comm_video.h"
-#include "cvi_comm_vpss.h"
+#include "linux/cvi_comm_vi.h"
+#include "linux/cvi_comm_video.h"
+#include "linux/cvi_comm_vpss.h"
 #include "cvi_sns_ctrl.h"
 #include "cvi_sys.h"
 #include "cvi_vb.h"

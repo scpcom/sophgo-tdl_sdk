@@ -5,11 +5,11 @@
 
 #if defined(__CV181X__) || defined(__CV180X__) || defined(__CV182X__) || \
     defined(__CV183X__) || defined(__CV184X__) || defined(__CV186X__)
-#include <cvi_comm_vpss.h>
-#include <cvi_errno.h>
-#include <cvi_math.h>
+#include <linux/cvi_comm_vpss.h>
+#include <linux/cvi_errno.h>
+#include <linux/cvi_math.h>
 #include <cvi_sys.h>
-#include <cvi_type.h>
+#include <linux/cvi_type.h>
 #include "cvi_venc.h"
 #include "image/vpss_image.hpp"
 #endif

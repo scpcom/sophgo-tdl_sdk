@@ -1,7 +1,7 @@
 #ifndef _RTSP_HPP_
 #define _RTSP_HPP_
 
-#include <cvi_type.h>
+#include <linux/cvi_type.h>
 #include <cvi_venc.h>
 #include <rtsp.h>
 #include <cstring>

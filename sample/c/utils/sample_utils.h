@@ -1,7 +1,7 @@
 #ifndef _RTSP_UTILS_H_
 #define _RTSP_UTILS_H_
 
-#include <cvi_comm_video.h>
+#include <linux/cvi_comm_video.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
