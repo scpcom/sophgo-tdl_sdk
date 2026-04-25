@@ -37,6 +37,7 @@ foreach(fname ${CAMERA_SRC_FILES})
     get_filename_component(name ${fname} NAME_WE)
     add_executable(${name} ${fname})
     target_link_libraries(${name} ${CAMERA_LIBS} dl rt atomic m)
+    target_link_options(${name} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)
     
     if(NOT BUILD_SHARED)
         add_custom_command(TARGET ${name} POST_BUILD

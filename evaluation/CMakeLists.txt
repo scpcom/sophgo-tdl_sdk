@@ -41,6 +41,7 @@ foreach (fname ${SAMPLE_SRC_FILES})
   get_filename_component(name ${fname} NAME_WE)
   add_executable(${name} ${fname} ${EVAL_SRC})
   target_link_libraries(${name} tdl_core  ${SAMPLE_LIBS} stdc++fs)
+  target_link_options(${name} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)
   install(TARGETS ${name} DESTINATION bin/eval)
 endforeach ()
 

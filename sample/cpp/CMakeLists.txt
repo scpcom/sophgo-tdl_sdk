@@ -112,6 +112,7 @@ foreach (fname ${SAMPLE_SRC_FILES})
   endif()
 
   target_link_libraries(${name} ${SAMPLE_LIBS})
+  target_link_options(${name} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)
   #strip
   if(NOT BUILD_SHARED)
     add_custom_command(TARGET ${name} POST_BUILD
