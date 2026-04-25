@@ -241,7 +241,8 @@ mkdir -p ${BUILD_WORKING_DIR}
 BUILD_DOWNLOAD_DIR="${BUILD_WORKING_DIR}"/_deps
 
 # set install path
-TDL_SDK_INSTALL_PATH="${CVI_TDL_ROOT}"/install/"${CHIP_ARCH}"
+[[ "${TDL_SDK_INSTALL_PATH}" != "" ]] || TDL_SDK_INSTALL_PATH=$AI_SDK_INSTALL_PATH
+[[ "${TDL_SDK_INSTALL_PATH}" != "" ]] || TDL_SDK_INSTALL_PATH="${CVI_TDL_ROOT}"/install/"${CHIP_ARCH}"
 
 # Set build option and type
 BUILD_TYPE=SDKRelease
