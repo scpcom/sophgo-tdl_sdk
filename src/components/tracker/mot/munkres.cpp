@@ -6,6 +6,7 @@
 #include "mot/munkres.hpp"
 #include "utils/tdl_log.hpp"
 
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
