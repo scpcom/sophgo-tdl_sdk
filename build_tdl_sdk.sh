@@ -56,7 +56,7 @@ CVI_TDL_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILD_SHARED=ON
 
 # set opencv version
-ENABLE_OPENCV_4_5=ON
+ENABLE_OPENCV_4_5=OFF
 
 [[ "$CHIP_ARCH" != "SG200X" ]] || export CHIP_ARCH=CV181X
 
