@@ -72,7 +72,8 @@ endif()
 if (NOT IS_DIRECTORY  "${BUILD_DOWNLOAD_DIR}/kissfft-src")
   FetchContent_Declare(
     kissfft
-    URL ${KISSFFT_URL}
+    GIT_REPOSITORY https://github.com/scpcom/kissfft.git
+    GIT_TAG 22afea2b5fb72a3581f5b13ac901cf3c7e67418e
   )
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)  # 确保全局PIC设置
   set(KISSFFT_TEST OFF CACHE BOOL "KISSFFT TEST")
@@ -125,16 +126,17 @@ else()
   set(KALDI_URL ${TOP_DIR}/tdl_sdk/dependency/thirdparty/kaldi-native-fbank.tar.gz)
 endif()
 
-if (NOT IS_DIRECTORY  "${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src")
+if (NOT IS_DIRECTORY  "${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src/kaldi-native-fbank/csrc")
   FetchContent_Declare(
     kaldi-native-fbank
-    URL ${KALDI_URL}
+    GIT_REPOSITORY https://github.com/scpcom/kaldi-native-fbank.git
+    GIT_TAG 947e6fff9dbf780b7c9b94fc996be1d5e6855f97
   )
   FetchContent_MakeAvailable(kaldi-native-fbank)
   message("Content downloaded to ${kaldi-native-fbank_SOURCE_DIR}")
 else()
   project(kaldi-native-fbank-src)
-  add_subdirectory(${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src/)
+  add_subdirectory(${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src/kaldi-native-fbank/csrc/)
 
 endif()
 
@@ -142,7 +144,7 @@ set(KISSFFT_STATIC_LIB  "${BUILD_DOWNLOAD_DIR}/kissfft-build/libkissfft-float.a"
 target_include_directories(kaldi-native-fbank-core PUBLIC ${KISSFFT_INCLUDES})
 target_link_libraries(kaldi-native-fbank-core ${KISSFFT_STATIC_LIB})
 
-set(FBANK_INCLUDES ${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src)
+set(FBANK_INCLUDES ${BUILD_DOWNLOAD_DIR}/kaldi-native-fbank-src/kaldi-native-fbank/csrc)
 # ===============kaldi native fbank===============
 
 
@@ -198,7 +200,7 @@ if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/nlohmannjson-src")
   FetchContent_MakeAvailable(nlohmannjson)
   message("Content downloaded to ${nlohmannjson_SOURCE_DIR}")
 endif()
-include_directories(${BUILD_DOWNLOAD_DIR}/nlohmannjson-src)
+include_directories(${BUILD_DOWNLOAD_DIR}/nlohmannjson-src/single_include/nlohmann)
 # ===============nlohmannjson===============
 
 if(NOT "${CVI_PLATFORM}" STREQUAL "CMODEL_CV181X" AND NOT "${CVI_PLATFORM}" STREQUAL "CMODEL_CV184X")
