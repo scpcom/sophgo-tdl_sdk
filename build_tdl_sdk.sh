@@ -58,8 +58,10 @@ BUILD_SHARED=ON
 # set opencv version
 ENABLE_OPENCV_4_5=ON
 
+[[ "$CHIP_ARCH" != "SG200X" ]] || export CHIP_ARCH=CV181X
+
 # Handle platform-specific build commands
-if [[ "$1" == "CV181X" ]]; then
+if [[ "$1" == "CV181X" ]] || [[ "$1" == "SG200X" ]]; then
     echo "Building for CV181X platform..."
     export CHIP_ARCH=CV181X
 
@@ -200,6 +202,7 @@ elif [[ "$1" == "all" || "$1" == "debug" || "$1" == "static" ]]; then
     cd ..
     source build/envsetup_soc.sh
     oldconfig
+    [[ "$CHIP_ARCH" != "SG200X" ]] || export CHIP_ARCH=CV181X
     cd tdl_sdk
 
     BUILD_OPTION=all
