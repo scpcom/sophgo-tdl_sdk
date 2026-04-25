@@ -44,7 +44,7 @@ set_target_properties(tdl_utils PROPERTIES
 )
 
 # Add static library
-add_library(tdl_utils-static STATIC ${UTILS_SOURCES} ${RTSP_LIBS_STATIC} ${MIDDLEWARE_OBJ})
+add_library(tdl_utils-static STATIC ${UTILS_SOURCES} ${MIDDLEWARE_OBJ})
 set_target_properties(tdl_utils-static PROPERTIES
     OUTPUT_NAME tdl_utils
     ENABLE_EXPORTS ON
@@ -86,3 +86,11 @@ file(GLOB HEADER_FILES *.h *.hpp)
 install(FILES ${HEADER_FILES}
     DESTINATION sample/utils/include
 )
+
+# Install cvi_rtsp
+if(${CVI_PLATFORM} STREQUAL "CV181X" OR ${CVI_PLATFORM} STREQUAL "CV184X")
+set(RTSP_PATH sample/cvi_rtsp)
+install(FILES ${RTSP_LIBS_SHARED} DESTINATION ${RTSP_PATH}/lib)
+install(FILES ${RTSP_LIBS_STATIC} DESTINATION ${RTSP_PATH}/lib)
+install(DIRECTORY ${RTSP_INCLUDE} DESTINATION ${RTSP_PATH}/include)
+endif()
