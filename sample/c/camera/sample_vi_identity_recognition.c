@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "cvi_comm_video.h"
+#include "linux/cvi_comm_video.h"
 #include "cvi_vi.h"
 #include "meta_visualize.h"
 #include "pthread_utils.h"

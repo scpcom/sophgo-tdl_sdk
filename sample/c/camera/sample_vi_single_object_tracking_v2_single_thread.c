@@ -18,7 +18,7 @@ static void handle_signal(int signal) {
 }
 #include <time.h>
 #include <unistd.h>
-#include "cvi_comm_video.h"
+#include "linux/cvi_comm_video.h"
 #include "cvi_vi.h"
 #include "meta_visualize.h"
 #include "sample_utils.h"

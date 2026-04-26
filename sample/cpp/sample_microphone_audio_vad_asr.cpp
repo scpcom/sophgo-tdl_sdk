@@ -1,5 +1,5 @@
 
-#include <cvi_comm_vpss.h>
+#include <linux/cvi_comm_vpss.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
