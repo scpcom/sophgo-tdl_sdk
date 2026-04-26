@@ -273,7 +273,10 @@ TDLDataType
 
    * - KEYPOINT_YOLOV8POSE_PERSON17
      - 人体17个关键点检测模型
-
+     
+   * - KEYPOINT_YOLOV8POSE
+     - 通用关键点检测模型
+     
    * - KEYPOINT_SIMCC_PERSON17
      - SIMCC 17个关键点检测模型
 
@@ -285,6 +288,9 @@ TDLDataType
 
    * - YOLOV8_SEG_COCO80
      - YOLOv8 COCO80分割模型
+
+   * - FASTSAM_SEG
+     - FastSAM分割模型
 
    * - TOPFORMER_SEG_PERSON_FACE_VEHICLE
      - 人、脸与车辆分割模型 (0:背景, 1:人, 2:脸, 3:车辆, 4:车牌)

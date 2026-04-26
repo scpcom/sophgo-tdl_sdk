@@ -83,6 +83,16 @@ class TDLModelFactory {
       const std::vector<uint64_t> &mem_addrs = {},
       const std::vector<uint32_t> &mem_sizes = {}, const int device_id = 0);
   ModelConfig getModelConfig(const ModelType model_type);
+
+  /*
+   * Get model instance without opening it. This allows configuring NetParam
+   * (e.g., skip_input_alloc) before calling modelOpen().
+   * @param model_type
+   * @return model instance (not opened yet, need to call modelOpen())
+   */
+  std::shared_ptr<BaseModel> getModelWithoutOpen(const ModelType model_type);
+  std::shared_ptr<BaseModel> getModelWithoutOpen(const std::string &model_type);
+
   /*
    * load model config from model_config_file
    * @param model_config_file, if empty, would load from
@@ -120,10 +130,12 @@ class TDLModelFactory {
   bool isKeypointDetectionModel(const ModelType model_type);
   bool isClassificationModel(const ModelType model_type);
   bool isSegmentationModel(const ModelType model_type);
+  bool isDepthEstimationModel(const ModelType model_type);
   bool isFeatureExtractionModel(const ModelType model_type);
   bool isOCRModel(const ModelType model_type);
   bool isObjectTrackingModel(const ModelType model_type);
   bool isSpeechRecognitionModel(const ModelType model_type);
+  bool isVoiceActivityDetectionModel(const ModelType model_type);
 
   std::shared_ptr<BaseModel> getModelImpl(ModelType model_type,
                                           const std::string &model_path,
@@ -145,12 +157,16 @@ class TDLModelFactory {
       const ModelType model_type);
   std::shared_ptr<BaseModel> createSegmentationModel(
       const ModelType model_type);
+  std::shared_ptr<BaseModel> createDepthEstimationModel(
+      const ModelType model_type);
   std::shared_ptr<BaseModel> createFeatureExtractionModel(
       const ModelType model_type);
   std::shared_ptr<BaseModel> createOCRModel(const ModelType model_type);
   std::shared_ptr<BaseModel> createObjectTrackingModel(
       const ModelType model_type);
   std::shared_ptr<BaseModel> createSpeechRecognitionModel(
+      const ModelType model_type);
+  std::shared_ptr<BaseModel> createVoiceActivityDetectionModel(
       const ModelType model_type);
 
   std::string model_dir_;

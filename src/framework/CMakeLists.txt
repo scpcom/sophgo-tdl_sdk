@@ -4,6 +4,7 @@ message(STATUS "REPO_DIR:${REPO_DIR}")
 include_directories(
                     ${REPO_DIR}/include/framework
                     ${REPO_DIR}/include/components
+                    ${REPO_DIR}/include/nn
                     )
 
 if(("${CVI_PLATFORM}" STREQUAL "BM1688") OR
@@ -65,6 +66,7 @@ set(PROJ_SRCS
                 ${CMAKE_CURRENT_SOURCE_DIR}/utils/image_alignment.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/utils/pose_helper.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/utils/profiler.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/utils/e2e_vad.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/common/model_output_types.cpp
                 )
 

@@ -32,10 +32,16 @@ typedef struct {
 
 typedef int int32_t;
 
-int32_t VisualizeRectangle(box_t *box, int32_t num, char *input_path,
-                           char *output_path);
+int32_t VisualizeRectangleFromFile(box_t *box, int32_t num, char *input_path,
+                                   char *output_path);
 
-int32_t VisualizePoint(point_t *point, int32_t num, char *input_path,
+int32_t VisualizeRectangle(box_t *box, int32_t num, TDLImage image_handle,
+                           char *output_path, int *colors);
+
+int32_t VisualizePointFromFile(point_t *point, int32_t num, char *input_path,
+                               char *output_path);
+
+int32_t VisualizePoint(point_t *point, int32_t num, TDLImage image_handle,
                        char *output_path);
 
 int32_t VisualizeLine(box_t *box, int32_t num, char *input_path,
@@ -52,6 +58,9 @@ int32_t MatToImage(int **mat, int weight, int height, char *output_path,
 
 int32_t VisualizText(int32_t x, int32_t y, char *text, char *input_path,
                      char *output_path);
+
+int32_t VisualizeDepthMap(TDLDepthLogits *depth_logits,
+                          const char *output_path);
 
 #if defined(__CV181X__) || defined(__CV180X__) || defined(__CV182X__) || \
     defined(__CV183X__) || defined(__CV184X__) || defined(__CV186X__)

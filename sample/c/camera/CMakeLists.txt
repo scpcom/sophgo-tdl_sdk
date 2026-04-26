@@ -33,8 +33,16 @@ else()
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--end-group")
 endif()
 
+set(app_samples sample_vi_consumer_counting sample_vi_cross_detection sample_vi_face_pet_cap 
+    sample_vi_fall_detection sample_vi_human_pose_smooth sample_vi_identity_recognition)
+
 foreach(fname ${CAMERA_SRC_FILES})
     get_filename_component(name ${fname} NAME_WE)
+
+    if("${name}" IN_LIST app_samples AND DEFINED ENABLE_APP_PIPELINE AND NOT ENABLE_APP_PIPELINE)
+      continue()
+    endif()
+
     add_executable(${name} ${fname})
     target_link_libraries(${name} ${CAMERA_LIBS} dl rt atomic m)
     target_link_options(${name} PUBLIC -Wl,-rpath=/mnt/system/lib -Wl,-rpath=/mnt/system/usr/lib -Wl,-rpath=/mnt/system/usr/lib/3rd)

@@ -3,6 +3,7 @@
 
 #include <map>
 #include "app/app_task.hpp"
+#include "components/snapshot/object_snapshot.hpp"
 #include "cv/intrusion_detect/intrusion_detect.hpp"
 #include "cv/motion_detect/motion_detect.hpp"
 #include "encoder/image_encoder/image_encoder.hpp"
@@ -26,6 +27,7 @@ typedef struct {
   std::shared_ptr<IntrusionDetection> intrusion_detect;
   std::shared_ptr<Tracker> tracker;
   std::shared_ptr<ModelASRInfo> asr_meta;
+  std::shared_ptr<ObjectSnapshot> snapshot_comp;
 } TDLContext;
 
 typedef struct {
@@ -78,6 +80,74 @@ inline TDLDataType convertDataTypeE(TDLDataTypeE data_type) {
       return TDLDataType::FP32;
     default:
       return TDLDataType::UNKOWN;
+  }
+}
+
+inline ImageFormatE convertImageFormat(ImageFormat format) {
+  switch (format) {
+    case ImageFormat::GRAY:
+      return IMAGE_GRAY;
+    case ImageFormat::RGB_PLANAR:
+      return IMAGE_RGB_PLANAR;
+    case ImageFormat::RGB_PACKED:
+      return IMAGE_RGB_PACKED;
+    case ImageFormat::BGR_PLANAR:
+      return IMAGE_BGR_PLANAR;
+    case ImageFormat::BGR_PACKED:
+      return IMAGE_BGR_PACKED;
+    case ImageFormat::YUV420SP_UV:
+      return IMAGE_YUV420SP_UV;
+    case ImageFormat::YUV420SP_VU:
+      return IMAGE_YUV420SP_VU;
+    case ImageFormat::YUV420P_UV:
+      return IMAGE_YUV420P_UV;
+    case ImageFormat::YUV420P_VU:
+      return IMAGE_YUV420P_VU;
+    case ImageFormat::YUV422P_UV:
+      return IMAGE_YUV422P_UV;
+    case ImageFormat::YUV422P_VU:
+      return IMAGE_YUV422P_VU;
+    case ImageFormat::YUV422SP_UV:
+      return IMAGE_YUV422SP_UV;
+    case ImageFormat::YUV422SP_VU:
+      return IMAGE_YUV422SP_VU;
+    case ImageFormat::UNKOWN:
+    default:
+      return IMAGE_UNKOWN;
+  }
+}
+
+inline ImageFormat convertImageFormatE(ImageFormatE format) {
+  switch (format) {
+    case IMAGE_GRAY:
+      return ImageFormat::GRAY;
+    case IMAGE_RGB_PLANAR:
+      return ImageFormat::RGB_PLANAR;
+    case IMAGE_RGB_PACKED:
+      return ImageFormat::RGB_PACKED;
+    case IMAGE_BGR_PLANAR:
+      return ImageFormat::BGR_PLANAR;
+    case IMAGE_BGR_PACKED:
+      return ImageFormat::BGR_PACKED;
+    case IMAGE_YUV420SP_UV:
+      return ImageFormat::YUV420SP_UV;
+    case IMAGE_YUV420SP_VU:
+      return ImageFormat::YUV420SP_VU;
+    case IMAGE_YUV420P_UV:
+      return ImageFormat::YUV420P_UV;
+    case IMAGE_YUV420P_VU:
+      return ImageFormat::YUV420P_VU;
+    case IMAGE_YUV422P_UV:
+      return ImageFormat::YUV422P_UV;
+    case IMAGE_YUV422P_VU:
+      return ImageFormat::YUV422P_VU;
+    case IMAGE_YUV422SP_UV:
+      return ImageFormat::YUV422SP_UV;
+    case IMAGE_YUV422SP_VU:
+      return ImageFormat::YUV422SP_VU;
+    case IMAGE_UNKOWN:
+    default:
+      return ImageFormat::UNKOWN;
   }
 }
 inline ModelType convertModelType(TDLModel m) {

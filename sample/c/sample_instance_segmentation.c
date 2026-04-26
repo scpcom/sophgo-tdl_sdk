@@ -11,6 +11,8 @@ int get_model_info(char *model_path, TDLModel *model_index) {
   int ret = 0;
   if (strstr(model_path, "yolov8n_seg_coco80") != NULL) {
     *model_index = TDL_MODEL_YOLOV8_SEG_COCO80;
+  } else if (strstr(model_path, "fastsam") != NULL) {
+    *model_index = TDL_MODEL_FASTSAM_SEG;
   } else {
     ret = -1;
   }
@@ -90,7 +92,7 @@ int main(int argc, char *argv[]) {
 
   TDLHandle tdl_handle = TDL_CreateHandle(0);
 
-  ret = TDL_OpenModel(tdl_handle, model_id, model_path, NULL);
+  ret = TDL_OpenModel(tdl_handle, model_id, model_path, NULL, 0);
   if (ret != 0) {
     printf("open instance seg model failed with %#x!\n", ret);
     goto exit0;

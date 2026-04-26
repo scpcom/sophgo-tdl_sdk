@@ -14,7 +14,8 @@
 #endif
 std::shared_ptr<BaseImage> ImageFactory::createImage(
     uint32_t width, uint32_t height, ImageFormat imageFormat,
-    TDLDataType pixDataType, bool alloc_memory, InferencePlatform platform) {
+    TDLDataType pixDataType, bool alloc_memory, InferencePlatform platform,
+    ImageType imageType) {
   if (platform == InferencePlatform::UNKOWN ||
       platform == InferencePlatform::AUTOMATIC) {
     platform = CommonUtils::getPlatform();
@@ -50,7 +51,8 @@ std::shared_ptr<BaseImage> ImageFactory::createImage(
     not defined(__CMODEL_CV184X__)
       LOGI("create VPSSImage");
       return std::make_shared<VPSSImage>(width, height, imageFormat,
-                                         pixDataType, alloc_memory);
+                                         pixDataType, alloc_memory, nullptr,
+                                         imageType);
 #else
       return nullptr;
 #endif
@@ -412,7 +414,8 @@ std::shared_ptr<BaseImage> ImageFactory::alignLicensePlate(
 }
 
 std::shared_ptr<BaseImage> ImageFactory::wrapVPSSFrame(void* vpss_frame,
-                                                       bool own_memory) {
+                                                       bool own_memory,
+                                                       bool is_preprocessed) {
 #if not defined(__BM168X__) && not defined(__CMODEL_CV181X__) && \
     not defined(__CMODEL_CV184X__)
   LOGI("create VPSSImage");
@@ -422,7 +425,7 @@ std::shared_ptr<BaseImage> ImageFactory::wrapVPSSFrame(void* vpss_frame,
   }
   (void)own_memory;
   VIDEO_FRAME_INFO_S* vpss_frame_info = (VIDEO_FRAME_INFO_S*)vpss_frame;
-  return std::make_shared<VPSSImage>(*vpss_frame_info);
+  return std::make_shared<VPSSImage>(*vpss_frame_info, is_preprocessed);
 #else
   LOGI("not support wrapImage on BM168X");
   return nullptr;
@@ -450,34 +453,37 @@ std::shared_ptr<BaseImage> ImageFactory::convertFromMat(cv::Mat& mat,
          mat.type());
     return nullptr;
   }
+
+#if defined(__BM168X__) || defined(__CMODEL_CV181X__) || \
+    defined(__CMODEL_CV184X__)
+  return std::make_shared<OpenCVImage>(mat, image_format);
+#else
   std::shared_ptr<BaseImage> image = ImageFactory::createImage(
       mat.cols, mat.rows, image_format, TDLDataType::UINT8, false);
   if (image == nullptr) {
     LOGE("Failed to create image");
     return nullptr;
   }
-  if (image->getImageType() == ImageType::OPENCV_FRAME) {
-    image = std::make_shared<OpenCVImage>(mat, image_format);
-  } else {
-    int32_t ret = image->allocateMemory();
-    if (ret != 0) {
-      LOGE("Failed to allocate memory");
-      return nullptr;
-    }
-    std::vector<uint8_t*> virtual_addresses = image->getVirtualAddress();
-    uint8_t* ptr_dst = virtual_addresses[0];
-    uint8_t* ptr_src = mat.data;
-    for (int r = 0; r < mat.rows; r++) {
-      uint8_t* dst = ptr_dst + r * image->getStrides()[0];
-      memcpy(dst, ptr_src + r * mat.step[0], mat.cols * 3);
-    }
-    ret = image->flushCache();
-    if (ret != 0) {
-      LOGE("Failed to flush cache");
-      return nullptr;
-    }
+
+  int32_t ret = image->allocateMemory();
+  if (ret != 0) {
+    LOGE("Failed to allocate memory");
+    return nullptr;
+  }
+  std::vector<uint8_t*> virtual_addresses = image->getVirtualAddress();
+  uint8_t* ptr_dst = virtual_addresses[0];
+  uint8_t* ptr_src = mat.data;
+  for (int r = 0; r < mat.rows; r++) {
+    uint8_t* dst = ptr_dst + r * image->getStrides()[0];
+    memcpy(dst, ptr_src + r * mat.step[0], mat.cols * 3);
+  }
+  ret = image->flushCache();
+  if (ret != 0) {
+    LOGE("Failed to flush cache");
+    return nullptr;
   }
   return image;
+#endif
 }
 
 int32_t ImageFactory::convertToMat(std::shared_ptr<BaseImage>& image,

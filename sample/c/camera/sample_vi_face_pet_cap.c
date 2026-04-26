@@ -207,6 +207,30 @@ void *run_tdl_thread(void *args) {
             printf("TDL_EncodeFrame failed with %#x!\n", ret);
             continue;
           }
+
+          if (capture_info.snapshot_info[j]
+                  .encoded_full_image) {  // save full image
+            sprintf(filename,
+                    "%s/%" PRIu64 "_face_%" PRIu64
+                    "_box[%.2f,%.2f,%.2f,%.2f]_full_image.jpg",
+                    pstArgs->output_dir,
+                    capture_info.snapshot_info[j].snapshot_frame_id,
+                    capture_info.snapshot_info[j].track_id,
+                    capture_info.snapshot_info[j].ori_box.x1,
+                    capture_info.snapshot_info[j].ori_box.y1,
+                    capture_info.snapshot_info[j].ori_box.x2,
+                    capture_info.snapshot_info[j].ori_box.y2);
+
+            FILE *f;
+            f = fopen(filename, "wb");
+            if (!f) {
+              printf("open file fail: %s\n", filename);
+            } else {
+              fwrite(capture_info.snapshot_info[j].encoded_full_image, 1,
+                     capture_info.snapshot_info[j].full_length, f);
+            }
+            fclose(f);
+          }
         }
 
         printf("to do TDL_CaculateSimilarity\n");
@@ -381,7 +405,7 @@ int main(int argc, char *argv[]) {
   }
 
   ret = TDL_APP_Init(tdl_handle, "face_pet_capture", config_file,
-                     &channel_names, &channel_size);
+                     &channel_names, &channel_size, false);
   if (ret != 0) {
     printf("TDL_APP_Init failed with %#x!\n", ret);
     goto exit1;

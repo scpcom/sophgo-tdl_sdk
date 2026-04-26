@@ -37,6 +37,7 @@
   X(YOLOV11N_DET_MONITOR_PERSON, "0:person")                                  \
   X(YOLOV11N_DET_BICYCLE_MOTOR_EBICYCLE, "0:bicycle,1:motorcycle,2:ebicycle") \
   X(YOLOV10, "custom model, specify num_cls")                                 \
+  X(YOLO26, "custom model, specify num_cls")                                  \
   X(PPYOLOE, "custom model, specify num_cls")                                 \
   X(YOLOX, "custom model, specify num_cls")                                   \
                                                                               \
@@ -75,6 +76,7 @@
   X(KEYPOINT_LICENSE_PLATE, "output 4 license plate keypoints")               \
   X(KEYPOINT_HAND, "output 21 hand keypoints")                                \
   X(KEYPOINT_YOLOV8POSE_PERSON17, "output 17 person keypoints and box")       \
+  X(KEYPOINT_YOLOV8POSE, "output object keypoints and box")                   \
   X(KEYPOINT_SIMCC_PERSON17, "output 17 person keypoints from cropped image") \
                                                                               \
   /* lane detection */                                                        \
@@ -86,6 +88,7 @@
   /* segmentation models */                                                   \
   X(YOLOV8_SEG, "custom segmentation")                                        \
   X(YOLOV8_SEG_COCO80, "output 80 segmentation mask")                         \
+  X(FASTSAM_SEG, "output everything segmentation mask")                       \
   X(TOPFORMER_SEG_PERSON_FACE_VEHICLE,                                        \
     "0:background,1:person,2:face,3:vehicle,4:license plate")                 \
   X(TOPFORMER_SEG_MOTION, "0:static,2:transition,3:motion")                   \
@@ -102,12 +105,21 @@
   X(FEATURE_BMFACE_R34, "resnet34 512-dimensional BMFace feature")            \
   X(FEATURE_BMFACE_R50, "resnet50 512-dimensional BMFace feature")            \
                                                                               \
+  /* person reid */                                                           \
+  X(FEATURE_REID, "reid 128x64 512-dimensional feature")                      \
+                                                                              \
   /* object tracking */                                                       \
   X(TRACKING_FEARTRACK, "single object tracking")                             \
                                                                               \
   /* speech recognition */                                                    \
   X(RECOGNITION_SPEECH_ZIPFORMER_ENCODER, "zipformer encoder")                \
   X(RECOGNITION_SPEECH_ZIPFORMER_DECODER, "zipformer decoder")                \
-  X(RECOGNITION_SPEECH_ZIPFORMER_JOINER, "zipformer joiner")
+  X(RECOGNITION_SPEECH_ZIPFORMER_JOINER, "zipformer joiner")                  \
+                                                                              \
+  /* voice activity detection */                                              \
+  X(VAD_FSMN, "fsmn voice activity detection")                                \
+                                                                              \
+  /* depth estimation */                                                      \
+  X(DEPTH_ESTIMATION_STEREO, "stereo depth estimation with two images")
 
 #endif

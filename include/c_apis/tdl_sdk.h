@@ -32,15 +32,16 @@ int32_t TDL_DestroyHandle(TDLHandle handle);
  *
  * @param frame 需要包装的帧图像信息，类型为VIDEO_FRAME_INFO_S
  * @param own_memory 是否拥有内存所有权
+ * @param is_preprocessed 是否已经预处理
  * @return  返回包装的 TDLImageHandle 对象, 如果失败返回 NULL
  */
-TDLImage TDL_WrapFrame(void *frame, bool own_memory);
+TDLImage TDL_WrapFrame(void *frame, bool own_memory, bool is_preprocessed);
 
 /**
- * @brief 将TDLImage包装为VIDEO_FRAME_INFO_S
+ * @brief 提取TDLImage内部数据到frame指针
  *
  * @param image TDLImageHandle 对象
- * @param frame 输出参数，存储包装后的帧信息，类型为VIDEO_FRAME_INFO_S
+ * @param frame 输出参数，接收指向内部数据的指针
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_WrapImage(TDLImage image, void *frame);
@@ -61,7 +62,6 @@ TDLImage TDL_ReadImage(const char *path);
  * @return  返回读取的 TDLImageHandle 对象, 如果失败返回 NULL
  */
 TDLImage TDL_ReadBin(const char *path, TDLDataTypeE data_type);
-
 /**
  * @brief 读取音频帧为 TDLImageHandle 对象
  *
@@ -107,10 +107,12 @@ int32_t TDL_SetModelDir(TDLHandle handle, const char *model_dir);
  * 1）使用TDL_LoadModelConfig加载后可以传入NULL,
  * 2）不使用TDL_LoadModelConfig加载，大部分专有模型也可以传入NULL，此时会使用算法类内部的默认配置，
  *    部分通用模型如特征提取、声音指令等需要传入模型配置信息，可以参考configs/model/model_config.json
+ * @param vpss_dev 指定模型预处理的vpss设备ID，0或1
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_OpenModel(TDLHandle handle, const TDLModel model_id,
-                      const char *model_path, const char *model_config_json);
+                      const char *model_path, const char *model_config_json,
+                      const int vpss_dev);
 
 /**
  * @brief 加载指定模型到 TDLHandle 对象
@@ -124,12 +126,14 @@ int32_t TDL_OpenModel(TDLHandle handle, const TDLModel model_id,
  * 1）使用TDL_LoadModelConfig加载后可以传入NULL,
  * 2）不使用TDL_LoadModelConfig加载，大部分专有模型也可以传入NULL，此时会使用算法类内部的默认配置，
  *    部分通用模型如特征提取、声音指令等需要传入模型配置信息，可以参考configs/model/model_config.json
+ * @param vpss_dev 指定模型预处理的vpss设备ID，0或1
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_OpenModelFromBuffer(TDLHandle handle, const TDLModel model_id,
                                 const uint8_t *model_buffer,
                                 uint32_t model_buffer_size,
-                                const char *model_config_json);
+                                const char *model_config_json,
+                                const int vpss_dev);
 /**
  * @brief 卸载指定模型并释放相关资源
  *
@@ -149,10 +153,17 @@ int32_t TDL_CloseModel(TDLHandle handle, const TDLModel model_id);
  */
 int32_t TDL_SetModelThreshold(TDLHandle handle, const TDLModel model_id,
                               float threshold);
-
 /**
- * @brief 执行通用目标检测
+ * @brief 获取模型预处理参数
  *
+ * @param handle 已初始化的 TDLHandle 对象
+ * @param model_id 要获取预处理参数的模型类型枚举值
+ * @param pre_param 输出参数，存储获取到的预处理参数
+ * @return 成功返回 0，失败返回-1
+ */
+int32_t TDL_GetPreprocessParameters(TDLHandle handle, const TDLModel model_id,
+                                    TDLPreprocessParams *pre_param);
+/**
  * @param handle 已加载模型的 TDLHandle 对象
  * @param model_id 使用的检测模型类型枚举值
  * @param image_handle TDLImageHandle 对象
@@ -343,6 +354,20 @@ int32_t TDL_LaneDetection(TDLHandle handle, const TDLModel model_id,
  */
 int32_t TDL_CharacterRecognition(TDLHandle handle, const TDLModel model_id,
                                  TDLImage image_handle, TDLText *text_meta);
+
+/**
+ * @brief 执行 VAD（语音活动检测）
+ *
+ * @param handle TDLHandle 对象
+ * @param model_id VAD 模型枚举值（通常为 TDL_MODEL_VAD_FSMN）
+ * @param image_handle 音频数据（TDL_ReadAudioFrame 生成，16k/16bit PCM
+ * @param is_final 0：流式输入未结束；1：输入结束（用于 flush / reset）
+ * @param vad_meta 输出参数，存储 VAD 段信息（用户需调用 TDL_ReleaseVADMeta
+ * @return 成功返回 0，失败返回-1
+ */
+int32_t TDL_VoiceActivityDetection(TDLHandle handle, const TDLModel model_id,
+                                   TDLImage image_handle, int is_final,
+                                   TDLVAD *vad_meta);
 /**
  * @brief 语音识别初始化
  *
@@ -375,12 +400,14 @@ int32_t TDL_SpeechRecognition(TDLHandle handle, const TDLModel model_id_encoder,
  *
  * @param handle TDLHandle 对象
  * @param model_id 指定深度估计模型类型枚举值
- * @param image_handle TDLImageHandle 对象
+ * @param left_image_handle 左图像 TDLImageHandle 对象
+ * @param right_image_handle 右图像 TDLImageHandle 对象
  * @param depth_logist 输出参数，存储深度估计结果
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_DepthStereo(TDLHandle handle, const TDLModel model_id,
-                        TDLImage image_handle, TDLDepthLogits *depth_logist);
+                        TDLImage left_image_handle, TDLImage right_image_handle,
+                        TDLDepthLogits *depth_logist);
 
 /**
  * @brief 执行目标跟踪任务
@@ -406,15 +433,21 @@ int32_t TDL_Tracking(TDLHandle handle, int frame_id, TDLFace *face_meta,
  * 2. 传入图像中某个点的位置(x, y)，(此时object_meta size不能为0)
  * 3. 传入object_meta中某个目标的索引，(此时object_meta size不能为0)
  * @param size set_values 元素个数(只能为1或2或4)
+ * @param frame_id 帧id
  * @param frame_type 目标框选的方法选择
  * 0 (TDL_REJECT): 不使用框选方法
  * 1 (TDL_GRABCUT ): 基于GrabCut框选方法（耗时高）
  * 2 (TDL_COLOR): 基于颜色阈值框选方法
+ * 3 (TDL_FASTSAM): 基于FastSAM框选方法
+ * @param model_path 当 frame_type 为 TDL_FASTSAM 时传入 FastSAM
+ * 模型路径，否则可传 NULL
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_SetSingleObjectTracking(TDLHandle handle, TDLImage image_handle,
                                     TDLObject *object_meta, int *set_values,
-                                    int size, TDLTargetSearchTypeE frame_type);
+                                    int size, uint64_t frame_id,
+                                    TDLTargetSearchTypeE frame_type,
+                                    const char *model_path);
 
 /**
  * @brief 执行单目追踪
@@ -480,11 +513,13 @@ int32_t TDL_MotionDetection(TDLHandle handle, TDLImage background,
  * @param config_file APP的json配置文件路径
  * @param channel_names 每一路视频流的名称信息
  * @param channel_size 视频流的路数
+ * @param skip_input_alloc 是否跳过输入tensor内存分配（默认false，分配内存）
+ *                         当设置为true时，addInput不会分配内存，适用于TENSOR_FRAME场景
  * @return 成功返回 0，失败返回-1
  */
 int32_t TDL_APP_Init(TDLHandle handle, const char *task,
                      const char *config_file, char ***channel_names,
-                     uint8_t *channel_size);
+                     uint8_t *channel_size, bool skip_input_alloc);
 
 /**
  * @brief 往APP送帧
@@ -510,6 +545,17 @@ int32_t TDL_APP_SetFrame(TDLHandle handle, const char *channel_name,
  */
 int32_t TDL_APP_Capture(TDLHandle handle, const char *channel_name,
                         TDLCaptureInfo *capture_info);
+/**
+ * @brief 执行人脸ID绑定任务
+ *
+ * @param handle TDLHandle 对象
+ * @param channel_name 当前channel的名称
+ * @param person_track_id 人物追踪ID
+ * @param registered_id 注册ID
+ * @return 成功返回 0，失败返回-1
+ */
+int32_t TDL_APP_SetFaceID(TDLHandle handle, const char *channel_name,
+                          uint64_t person_track_id, int registered_id);
 
 /**
  * @brief 执行客流统计(TDL_APP_Init task
@@ -540,6 +586,28 @@ int32_t TDL_APP_ObjectCounting(TDLHandle handle, const char *channel_name,
 int32_t TDL_APP_ObjectCountingSetLine(TDLHandle handle,
                                       const char *channel_name, int x1, int y1,
                                       int x2, int y2, int mode);
+
+/**
+ * @brief 执行跌倒检测任务
+ *
+ * @param handle TDLHandle 对象
+ * @param channel_name 当前channel的名称
+ * @param capture_info 检测结果
+ * @return 成功返回 0，失败返回-1
+ */
+int32_t TDL_APP_FallDetection(TDLHandle handle, const char *channel_name,
+                              TDLCaptureInfo *capture_info);
+
+/**
+ * @brief 执行人体关键点平滑任务
+ *
+ * @param handle TDLHandle 对象
+ * @param channel_name 当前channel的名称
+ * @param capture_info 平滑结果
+ * @return 成功返回 0，失败返回-1
+ */
+int32_t TDL_APP_HumanPoseSmooth(TDLHandle handle, const char *channel_name,
+                                TDLCaptureInfo *capture_info);
 
 #ifdef __cplusplus
 }

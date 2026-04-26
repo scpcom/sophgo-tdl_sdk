@@ -2,6 +2,7 @@
 #define TDL_SDK_TRACKER_TYPES_HPP
 
 #include <memory>
+#include <string>
 #include "common/model_output_types.hpp"
 #include "common/object_type_def.hpp"
 #include "image/base_image.hpp"
@@ -18,7 +19,7 @@ class TrackerInfo {
   int matched_times_;
   // if -1, it is not matched with current detection
   int obj_idx_;
-  int pair_track_idx_;
+  uint64_t pair_track_idx_;
   uint64_t track_id_;
   float velocity_x_;
   float velocity_y_;
@@ -48,15 +49,20 @@ class Tracker {
 
   virtual int32_t initialize(const std::shared_ptr<BaseImage>& image,
                              const std::vector<ObjectBoxInfo>& detect_boxes,
-                             const ObjectBoxInfo& bbox, int frame_type);
+                             const ObjectBoxInfo& bbox, uint64_t frame_id,
+                             int frame_type,
+                             const std::string& model_path = "");
 
   virtual int32_t initialize(const std::shared_ptr<BaseImage>& image,
                              const std::vector<ObjectBoxInfo>& detect_boxes,
-                             float x, float y, int frame_type);
+                             float x, float y, uint64_t frame_id,
+                             int frame_type,
+                             const std::string& model_path = "");
 
   virtual int32_t initialize(const std::shared_ptr<BaseImage>& image,
                              const std::vector<ObjectBoxInfo>& detect_boxes,
-                             int index);
+                             int index, uint64_t frame_id,
+                             const std::string& model_path = "");
 
   virtual void setPairConfig(
       std::map<TDLObjectType, TDLObjectType> object_pair_config){};

@@ -16,6 +16,8 @@ enum class ModelOutputType {
   SEGMENTATION,
   OCR_INFO,
   ASR_INFO,
+  VAD_INFO,
+  DEPTH_ESTIMATION,
   UNKOWN
 };
 
@@ -232,4 +234,33 @@ class ModelASRInfo : public ModelOutputInfo {
   bool input_finished = false;
 };
 
+class ModelVADInfo : public ModelOutputInfo {
+ public:
+  ~ModelVADInfo() = default;
+  ModelOutputType getType() const override { return ModelOutputType::VAD_INFO; }
+  std::vector<std::vector<std::vector<int>>> segments;
+  bool has_segments = false;
+  bool start_event = false;
+  bool end_event = false;
+};
+
+class ModelDepthInfo : public ModelOutputInfo {
+ public:
+  ModelDepthInfo() : w(0), h(0), logits(nullptr) {}
+
+  ~ModelDepthInfo() {
+    if (logits != nullptr) {
+      free(logits);
+      logits = nullptr;
+    }
+  }
+
+  ModelOutputType getType() const override {
+    return ModelOutputType::DEPTH_ESTIMATION;
+  }
+
+  int w;
+  int h;
+  float *logits;
+};
 #endif

@@ -50,6 +50,10 @@ int32_t TDL_InitCharacterMeta(TDLText *text_meta, int length);
 
 int32_t TDL_ReleaseCharacterMeta(TDLText *text_meta);
 
+int32_t TDL_InitVADMeta(TDLVAD *vad_meta, int num_segments);
+
+int32_t TDL_ReleaseVADMeta(TDLVAD *vad_meta);
+
 int32_t TDL_InitTrackMeta(TDLTracker *track_meta, int num_track);
 
 int32_t TDL_ReleaseTrackMeta(TDLTracker *track_meta);
@@ -75,11 +79,16 @@ int32_t TDL_GetGalleryFeature(const char *gallery_dir,
 int32_t TDL_EncodeFrame(TDLHandle handle, TDLImage image, const char *img_path,
                         int vechn);
 
+int32_t TDL_EncodeFrameRaw(TDLHandle handle, TDLImage image, int vechn,
+                           uint8_t **encoded_data, uint32_t *encoded_size);
+
 int32_t TDL_SaveTDLImage(TDLImage image, const char *img_save_path);
 
 int32_t TDL_ClipPostprocess(float *text_features, int text_rows,
                             float *image_features, int image_rows,
                             int feature_dim, float **result);
+int32_t TDL_GetRescaleConfig(const TDLPreprocessParams *params, int image_width,
+                             int image_height, TDLRescaleConfig *out_config);
 #ifdef __cplusplus
 }
 #endif

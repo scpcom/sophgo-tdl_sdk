@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 
   TDLHandle tdl_handle = TDL_CreateHandle(0);
 
-  ret = TDL_OpenModel(tdl_handle, model_id, model_path, NULL);
+  ret = TDL_OpenModel(tdl_handle, model_id, model_path, NULL, 0);
   if (ret != 0) {
     printf("open model failed with %#x!\n", ret);
     goto exit0;
@@ -93,7 +93,9 @@ int main(int argc, char *argv[]) {
   }
 
   TDLText obj_meta = {0};
+
   ret = TDL_CharacterRecognition(tdl_handle, model_id, image, &obj_meta);
+
   if (ret != 0) {
     printf("TDL_CharacterRecognition failed with %#x!\n", ret);
   } else {

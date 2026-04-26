@@ -47,18 +47,17 @@ endif()
 include_directories(${SAMPLE_INCLUDES})
 
 file(GLOB SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-if(${CVI_PLATFORM} STREQUAL "CV180X" OR
-   ${CVI_PLATFORM} STREQUAL "CV181X" OR
-   ${CVI_PLATFORM} STREQUAL "CV182X" OR
-   ${CVI_PLATFORM} STREQUAL "CV183X" OR
-   ${CVI_PLATFORM} STREQUAL "CV184X" OR
-   ${CVI_PLATFORM} STREQUAL "SOPHON")
-  file(GLOB APP_SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.c)
-  list(APPEND SAMPLE_SRC_FILES ${APP_SAMPLE_SRC_FILES})
-endif()
+file(GLOB APP_SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/app/*.c)
+list(APPEND SAMPLE_SRC_FILES ${APP_SAMPLE_SRC_FILES})
+
+
 
 if(NOT ${CVI_PLATFORM} STREQUAL "CV181X" AND NOT ${CVI_PLATFORM} STREQUAL "CV184X" AND NOT ${CVI_PLATFORM} STREQUAL "SOPHON")
   list(REMOVE_ITEM SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_motion_detection.c)
+endif()
+
+if(${CVI_PLATFORM} STREQUAL "SOPHON" OR ${CVI_PLATFORM} STREQUAL "CMODEL_CV181X" OR ${CVI_PLATFORM} STREQUAL "CV180X")
+  list(REMOVE_ITEM SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_single_object_tracking.c)
 endif()
 
 if(${CVI_PLATFORM} STREQUAL "CMODEL_CV181X" OR ${CVI_PLATFORM} STREQUAL "CMODEL_CV184X")
@@ -73,6 +72,7 @@ if (NOT ("${CVI_PLATFORM}" STREQUAL "CV180X") AND
     NOT ("${CVI_PLATFORM}" STREQUAL "CV183X") AND
     NOT ("${CVI_PLATFORM}" STREQUAL "CV184X"))
   list(REMOVE_ITEM SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_microphone_asr.c)
+  list(REMOVE_ITEM SAMPLE_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_microphone_vad_asr.c)
 endif()
 
 message(STATUS "SAMPLE_SRC_FILES:${SAMPLE_SRC_FILES}")
@@ -80,13 +80,29 @@ message(STATUS "SAMPLE_SRC_FILES:${SAMPLE_SRC_FILES}")
 foreach (fname ${SAMPLE_SRC_FILES})
   set(EXAMPLE_SRC_FILES ${EXAMPLE_SRC_FILES} ${fname})
   get_filename_component(name ${fname} NAME_WE)
+
+  string(FIND "${name}" "_asr" pos)
+  if(pos GREATER_EQUAL 0 AND DEFINED ENABLE_SPEECH_RECOGNITION AND NOT ENABLE_SPEECH_RECOGNITION)
+    continue()
+  endif()
+
+  string(FIND "${name}" "_vad" pos)
+  if(pos GREATER_EQUAL 0 AND DEFINED ENABLE_SPEECH_RECOGNITION AND NOT ENABLE_SPEECH_RECOGNITION)
+    continue()
+  endif()
+
+  string(FIND "${fname}" "app" pos)
+  if(pos GREATER_EQUAL 0 AND DEFINED ENABLE_APP_PIPELINE AND NOT ENABLE_APP_PIPELINE)
+    continue()
+  endif()
+
   add_executable(${name} ${fname})
 
   # 默认只链接核心库，避免不必要的网络依赖
   set(SAMPLE_LIBS ${CORE_LIBS} dl rt atomic m)
   
   # 只有需要网络功能的应用才链接网络相关库
-  if(name STREQUAL "sample_llm_api")
+  if(name MATCHES "llm_api" OR name MATCHES "media_analysis")
     set(SAMPLE_LIBS ${EX_LIBS} ${CORE_LIBS} dl rt atomic m)
     message(STATUS "SAMPLE_LIBS:${SAMPLE_LIBS} for ${name}")
   endif()

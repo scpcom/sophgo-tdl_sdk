@@ -20,7 +20,6 @@
     $(pwd)/ramdisk/rootfs/public/libz/uclibc/lib:\
     $(pwd)/tdl_sdk/install/CV184X/sample/3rd/curl/lib:\
     $(pwd)/tdl_sdk/install/CV184X/sample/3rd/libwebsockets/lib
-    export BMRUNTIME_USING_FIRMWARE=/mnt/tpu_files/lib/libtpu_kernel_module.so
     ```
 
 3. **每次板端重启后需重新设置系统时钟**
@@ -54,6 +53,7 @@
 | aliyun          | imgeditor         | 通用图像编辑，支持多种编辑功能             |
 | tts             | synthesize        | 流式语音合成                               |
 | asr             | recognize         | 流式语音识别                               |
+| doubao          | voice_chat        | 语音对话                                   |
 
 ## 使用说明
 
@@ -253,5 +253,16 @@ sub_req_key:
     "cluster": "volcengine_streaming_common",
     "audio_path": "path/to/audio.pcm（后缀需与 format 保持一致）",
     "audio_format": "raw"
+}
+```
+
+### doubao-voice_chat
+
+**JSON 示例：**
+
+```json
+{
+    "app_id": "voice_chat_app_id",
+    "access_key": "your_access_key"
 }
 ```

@@ -248,6 +248,18 @@
        _ZIPFORMER_JOINER
      - zipformer语音识别joiner模型
 
+人声检测类模型列表
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :widths: 10 9
+
+   * - 模型名称
+     - 注释
+
+   * - TDL_MODEL_VAD_FSMN 
+     - Fsmn人声检测模型
+
 分割类模型列表
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -256,6 +268,9 @@
 
    * - TDL_MODEL_YOLOV8_SEG_COCO80
      - YOLOv8 COCO80分割模型
+
+   * - TDL_MODEL_FASTSAM_SEG
+     - FastSAM分割模型
 
    * - TDL_MODEL_SEG_PERSON_FACE_VEHICLE
      - 人、脸与车辆分割模型 (0:背景, 1:人, 2:脸, 3:车辆, 4:车牌)
@@ -286,6 +301,18 @@
 
    * - TDL_MODEL_FEATURE_BMFACE_R50
      - ResNet50 512维特征提取模型
+
+深度估计类模型列表
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :widths: 10 9
+
+   * - 模型名称
+     - 注释
+
+   * - TDL_MODEL_DEPTH_ESTIMATION_STEREO 
+     - 立体深度估计模型
 
 结构体参考
 ================
@@ -1055,7 +1082,7 @@ TDLDepthLogits
   typedef struct {
     int w;
     int h;
-    int8_t *int_logits;
+    float *logits;
   } TDLDepthLogits;
 
 【成员】
@@ -1072,7 +1099,7 @@ TDLDepthLogits
    * - h
      - 图像的高度
 
-   * - int_logits
+   * - logits
      - 深度估计信息
   
 TDLTracker
@@ -1142,6 +1169,79 @@ TDLText
   
    * - text_info
      - 文本识别的信息
+
+TDLVadSegment
+~~~~~~~~~~~~~~~
+
+【说明】
+
+人声检测语音段
+
+【定义】
+
+.. code-block:: c
+
+  typedef struct {
+    int32_t start_ms;
+    int32_t end_ms;
+  } TDLVadSegment;
+
+【成员】
+
+.. list-table::
+   :widths: 1 1
+
+   * - 数据类型枚举类
+     - 注释
+
+   * - start_ms
+     - 段起始时间（ms）
+  
+   * - end_ms
+     - 段结束时间（ms），若为 -1 表示仍在进行中
+
+TDLVad
+~~~~~~~~~~~~~~
+
+【说明】
+
+人声检测语音输出
+
+【定义】
+
+.. code-block:: c
+
+  typedef struct {
+    uint32_t size;
+    TDLVadSegment *segments;
+    bool has_speech;
+    bool start_event;
+    bool end_event;
+  } TDLVAD;
+
+【成员】
+
+.. list-table::
+   :widths: 1 1
+
+   * - 数据类型枚举类
+     - 注释
+
+   * - size
+     - 输入语音的个数
+  
+   * - segments
+     - 人声语音段段数组
+
+   * - has_speech
+     - 输出是否检测到人声段
+
+   * - start_event
+     - 是否存在流式检测语音段开始帧
+
+   * - end_event
+     - 是否存在流式检测语音段结束帧
+
 
 API参考
 ================
@@ -1447,9 +1547,9 @@ TDL_OpenModel
 
 .. code-block:: c
 
-  int32_t TDL_OpenModel(TDLHandle handle,
-                        const TDLModel model_id,
-                        const char *model_path);
+  int32_t TDL_OpenModel(TDLHandle handle, const TDLModel model_id,
+                        const char *model_path, const char *model_config_json,
+                        const int vpss_dev);
 
 【描述】
 
@@ -1480,6 +1580,76 @@ TDL_OpenModel
      - const char\*
      - model_path
      - 模型路径
+
+   * - 输入
+     - const char\*
+     - model_config_json
+     - 模型配置 JSON 路径
+
+   * - 输入
+     - int
+     - vpss_dev
+     - VPSS 设备 ID
+
+
+
+TDL_OpenModelFromBuffer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+【语法】
+
+.. code-block:: c
+
+  int32_t TDL_OpenModelFromBuffer(TDLHandle handle, const TDLModel model_id,
+                                  const uint8_t *model_buffer,
+                                  uint32_t model_buffer_size,
+                                  const char *model_config_json,
+                                  const int vpss_dev);
+
+【描述】
+
+从内存加载指定类型的模型到 TDLHandle 对象中。
+
+【参数】
+
+.. list-table::
+   :widths: 1 3 1 2
+   :header-rows: 1
+
+   * -
+     - 数据型态
+     - 参数名称
+     - 说明
+
+   * - 输入
+     - TDLHandle
+     - handle
+     - TDLHandle 对象
+
+   * - 输入
+     - const TDLModel
+     - model_id
+     - 模型类型枚举
+
+   * - 输入
+     - const uint8_t\*
+     - model_buffer
+     - 模型数据指针
+
+   * - 输入
+     - uint32_t
+     - model_buffer_size
+     - 模型数据大小
+
+   * - 输入
+     - const char\*
+     - model_config_json
+     - 模型配置 JSON 路径
+
+   * - 输入
+     - int
+     - vpss_dev
+     - VPSS 设备 ID
 
 TDL_CloseModel
 ~~~~~~~~~~~~~~~~~~
@@ -2113,7 +2283,8 @@ TDL_DepthStereo
 
   int32_t TDL_DepthStereo(TDLHandle handle,
                           const TDLModel model_id,
-                          TDLImage image_handle,
+                          TDLImage left_image_handle,
+                          TDLImage right_image_handle,
                           TDLDepthLogits *depth_logist);
 
 【描述】
@@ -2143,8 +2314,13 @@ TDL_DepthStereo
 
    * - 输入
      - TDLImage
-     - image_handle
-     - TDLImageHandle 对象
+     - left_image_handle
+     - 左图像 TDLImageHandle 对象
+
+   * - 输入
+     - TDLImage
+     - right_image_handle
+     - 右图像 TDLImageHandle 对象
 
    * - 输出
      - TDLDepthLogits\*
@@ -2785,6 +2961,60 @@ TDL_MotionDetection
      - obj_meta
      - 输出参数，存储检测结果
 
+TDL_VoiceActivityDetection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+【语法】
+
+.. code-block:: c
+
+  int32_t TDL_VoiceActivityDetection(TDLHandle handle,
+                                     const TDLModel model_id,
+                                     TDLImage image_handle, 
+                                     int is_final,
+                                     TDLVAD *vad_meta);
+ 
+【描述】
+
+执行流式人声检测任务。
+
+【参数】
+
+.. list-table::
+   :widths: 1 4 1 2
+   :header-rows: 1
+
+   * -
+     - 数据型态
+     - 参数名称
+     - 说明
+
+   * - 输入
+     - TDLHandle
+     - handle
+     - TDLHandle 对象
+
+   * - 输入
+     - const TDLModel
+     - model_id
+     - 指定人声检测模型类型枚举值
+
+   * - 输入
+     - TDLImage
+     - image_handle
+     - TDLImageHandle 对象
+
+   * - 输入
+     - int
+     - is_final
+     - 0：流式输入未结束；1：输入结束
+
+
+   * - 输出
+     - TDLVAD*
+     - vad_meta
+     - 输出参数，存储检测结果
+
 TDL_APP_Init
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -3033,6 +3263,89 @@ TDL_APP_ObjectCountingSetLine
      - int
      - mode
      - 对于客流统计: mode为0时, 对于竖直线, 从左到右为进入, 对于非竖直线,从上到下为进入, mode为1相反。对于越界检测: mode为0时, 对于竖直线, 从左到右为越过, 对于非竖直线,从上到下为越过, mode为1相反, mode为2双向检测
+
+TDL_APP_FallDetection
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+【语法】
+
+.. code-block:: c
+
+  int32_t TDL_APP_FallDetection(TDLHandle handle,
+                          const char *channel_name,
+                          TDLCaptureInfo *capture_info);
+
+【描述】
+
+执行跌倒检测任务。
+
+【参数】
+
+.. list-table::
+   :widths: 1 4 1 2
+   :header-rows: 1
+
+   * -
+     - 数据型态
+     - 参数名称
+     - 说明
+
+   * - 输入
+     - TDLHandle
+     - handle
+     - TDLHandle 对象
+
+   * - 输入
+     - const char*
+     - channel_name
+     - 当前channel的名称
+
+   * - 输出
+     - TDLCaptureInfo*
+     - capture_info
+     - 检测结果
+
+
+TDL_APP_HumanPoseSmooth
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+【语法】
+
+.. code-block:: c
+
+  int32_t TDL_APP_HumanPoseSmooth(TDLHandle handle,
+                          const char *channel_name,
+                          TDLCaptureInfo *capture_info);
+
+【描述】
+
+执行人体关键点平滑任务。
+
+【参数】
+
+.. list-table::
+   :widths: 1 4 1 2
+   :header-rows: 1
+
+   * -
+     - 数据型态
+     - 参数名称
+     - 说明
+
+   * - 输入
+     - TDLHandle
+     - handle
+     - TDLHandle 对象
+
+   * - 输入
+     - const char*
+     - channel_name
+     - 当前channel的名称
+
+   * - 输出
+     - TDLCaptureInfo*
+     - capture_info
+     - 关键点平滑结果
 
 TDL_WrapImage
 ~~~~~~~~~~~~~~~~~~~~~
