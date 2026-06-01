@@ -236,7 +236,11 @@ if(NOT "${CVI_PLATFORM}" STREQUAL "CMODEL_CV181X" AND NOT "${CVI_PLATFORM}" STRE
   # ===============libwebsockets===============
 
   # ===============openssl===============
-  if(EXISTS "${OSS_TARBALL_PATH}/openssl.tar.gz")
+  if(EXISTS "${OSS_TARBALL_PATH}/openssl3.0.tar.gz")
+    set(OPENSSL_URL ${OSS_TARBALL_PATH}/openssl3.0.tar.gz)
+  elseif(EXISTS "${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/openssl3.0.tar.gz")
+    set(OPENSSL_URL ${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/openssl3.0.tar.gz)
+  elseif(EXISTS "${OSS_TARBALL_PATH}/openssl.tar.gz")
     set(OPENSSL_URL ${OSS_TARBALL_PATH}/openssl.tar.gz)
   elseif(EXISTS "${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/openssl.tar.gz")
     set(OPENSSL_URL ${TOP_DIR}/oss/oss_release_tarball/${ARCHITECTURE}/openssl.tar.gz)
